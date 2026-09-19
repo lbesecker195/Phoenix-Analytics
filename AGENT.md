@@ -75,7 +75,7 @@ page.
 
 ## Working on it
 
-    mix test                         # 94 tests
+    mix test                         # 109 tests
     mix format --check-formatted
     mix compile --warnings-as-errors
 

@@ -22,6 +22,10 @@ All notable changes to this project are documented here. This project follows
   `list_pages`, `read_page`, `site_activity`, `record_event` — plus a behaviour
   for an application's own. Speaks the stateless 2026-07-28 revision and the
   handshake era from 2024-11-05 through 2025-11-25.
+- `mix phoenix_analytics.server_json`, which writes the descriptor an MCP
+  registry needs to list a mounted site, deriving the remote URL and the
+  reverse-DNS name rather than leaving two mechanical fields to be got wrong.
+  `--verify` calls the endpoint before writing.
 - `PhoenixAnalytics.SiteMap`, a bounded in-memory record of what this node has
   served, which is what the built-in tools answer from.
 - `PhoenixAnalytics.event/3` for server-side conversions, sent with the request's

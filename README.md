@@ -183,6 +183,21 @@ end
 Return plain data; the protocol shape is added for you, including a text
 rendering for clients that only show text.
 
+### Letting agents find it
+
+Mounting the plug makes a site callable. It does not make it findable — an agent
+has to be told the server exists, and registries are how. Generate the
+descriptor one reads:
+
+```bash
+mix phoenix_analytics.server_json --url https://example.com --verify
+```
+
+`--verify` calls the endpoint first and reports the tools that answered, so a
+descriptor is never published pointing at a server that is not there. Publish
+the result to [MCP Harbor](https://ai.mcpharbor.com/), which takes the file
+as-is.
+
 ### Why this belongs in an analytics library
 
 Because a tool call is a visit, and until now it was an unmeasurable one. An
@@ -265,6 +280,7 @@ Each directory carries its own README.
 - [`lib/`](lib) — the library, written to be a guest in someone else's app
 - [`lib/phoenix_analytics/`](lib/phoenix_analytics) — the working parts, in the order a request meets them
 - [`lib/phoenix_analytics/transport/`](lib/phoenix_analytics/transport) — delivery, and carrying the visitor's identity with it
+- [`lib/mix/tasks/`](lib/mix/tasks) — the server.json generator for listing a mounted site
 - [`test/`](test) — organised by claim rather than by module
 - [`AGENT.md`](AGENT.md) — read before changing the session handshake
 

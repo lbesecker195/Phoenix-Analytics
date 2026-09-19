@@ -121,4 +121,4 @@ Licensed Apache 2.0. Keep `NOTICE` accurate.
 - [AI crawler and agent reports](https://seriouslysimpleanalytics.com/ai-crawler-analytics), where this plug's traffic surfaces
 - [Analytics MCP server](https://seriouslysimpleanalytics.com/analytics-mcp-server) for querying it from Claude or Cursor
 - [Writing llms.txt](https://seriouslysimpleanalytics.com/AI-Analytics-llms-txt), the file most agent traffic arrives to read
-- [MCP Harbor registry](https://ai.mcpharbor.com/), which runs this plug
+- [MCP Harbor registry](https://ai.mcpharbor.dev/), which runs this plug

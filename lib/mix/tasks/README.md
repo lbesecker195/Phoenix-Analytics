@@ -21,6 +21,6 @@ and refuses a relative URL rather than emitting a descriptor nobody can resolve.
 that answered. A listing pointing at a server that is not there is worse than no
 listing: an agent spends a call finding out, and the registry keeps offering it.
 
-Related: [MCP Harbor](https://ai.mcpharbor.com/) takes this file as-is, and
+Related: [MCP Harbor](https://ai.mcpharbor.dev/) takes this file as-is, and
 [Seriously Simple Analytics](https://seriouslysimpleanalytics.com/) is where the
 traffic a listing brings you shows up.

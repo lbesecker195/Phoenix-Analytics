@@ -195,7 +195,7 @@ mix phoenix_analytics.server_json --url https://example.com --verify
 
 `--verify` calls the endpoint first and reports the tools that answered, so a
 descriptor is never published pointing at a server that is not there. Publish
-the result to [MCP Harbor](https://ai.mcpharbor.com/), which takes the file
+the result to [MCP Harbor](https://ai.mcpharbor.dev/), which takes the file
 as-is.
 
 ### Why this belongs in an analytics library
@@ -294,7 +294,7 @@ Each directory carries its own README.
   — query these same numbers from Claude, Cursor or VS Code.
 - [Writing an llms.txt for AI visibility](https://seriouslysimpleanalytics.com/AI-Analytics-llms-txt)
   — the file most of this plug's non-browser traffic comes to read.
-- [MCP Harbor registry](https://ai.mcpharbor.com/) — where the analytics MCP
+- [MCP Harbor registry](https://ai.mcpharbor.dev/) — where the analytics MCP
   server is listed alongside other tools agents can call.
 
 ## Contributing and support

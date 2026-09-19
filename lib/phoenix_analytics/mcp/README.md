@@ -27,4 +27,4 @@ as one thing.
 
 Related: [Seriously Simple Analytics](https://seriouslysimpleanalytics.com/),
 its [own MCP server](https://seriouslysimpleanalytics.com/analytics-mcp-server),
-and [MCP Harbor](https://ai.mcpharbor.com/) for listing yours.
+and [MCP Harbor](https://ai.mcpharbor.dev/) for listing yours.

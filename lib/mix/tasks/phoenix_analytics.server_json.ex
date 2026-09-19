@@ -182,7 +182,7 @@ defmodule Mix.Tasks.PhoenixAnalytics.ServerJson do
     Wrote #{path}
 
     It describes the server at #{endpoint}.
-    Publish it to a registry to let agents find it — https://ai.mcpharbor.com
+    Publish it to a registry to let agents find it — https://ai.mcpharbor.dev
     lists MCP servers and takes this file as-is.
     """)
   end

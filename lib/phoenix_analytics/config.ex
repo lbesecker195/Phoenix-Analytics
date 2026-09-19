@@ -9,12 +9,20 @@ defmodule PhoenixAnalytics.Config do
   plug having been recompiled.
   """
 
-  @default_endpoint "https://seriouslysimpleanalytics.com/api/v1/collect"
+  @hosted_endpoint "https://seriouslysimpleanalytics.com/api/v1/collect"
+
+  # Resolved per request rather than baked in, so a self-hosted deployment needs
+  # one environment variable and no code change, and so a test suite can point
+  # the whole thing at a local collector.
+  @default_endpoint {:system, "SSA_COLLECT_URL", @hosted_endpoint}
 
   # The tag's own default is 30 minutes (`data-session-timeout-min`). The two
   # have to agree: this is the lifetime written on the session cookie, and a
   # shorter one here would expire a session the tag still considers open.
   @default_session_timeout_min 30
+
+  @doc "The hosted collect endpoint, used when nothing else is configured."
+  def hosted_endpoint, do: @hosted_endpoint
 
   defstruct site: nil,
             endpoint: @default_endpoint,

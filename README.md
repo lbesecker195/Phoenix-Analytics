@@ -115,7 +115,7 @@ Redirects, `404`s, `POST`s, images and binary downloads are never recorded.
 | Option | Default | Notes |
 | --- | --- | --- |
 | `:site` | — | **Required.** Site key. Accepts `{:system, "VAR"}` or a zero-arity function. |
-| `:endpoint` | hosted collect URL | Point at your own deployment if you self-host. |
+| `:endpoint` | `SSA_COLLECT_URL`, else the hosted URL | Self-hosting needs the environment variable, not a code change. |
 | `:enabled` | `true` | Set `false` for test suites and review apps. |
 | `:ignore_paths` | `[]` | Prefixes, regexes or predicates. Health checks and webhooks belong here. |
 | `:cookie_domain` | registrable domain | Must match the tag's scope. |
@@ -167,6 +167,16 @@ agent, referrer, language and geolocation hints, and no raw address into
 storage — the endpoint salts and hashes it, or masks it, in the request that
 carried it. Cookies hold a random session token and a random visitor id, and
 nothing else.
+
+## Repository map
+
+Each directory carries its own README.
+
+- [`lib/`](lib) — the library, written to be a guest in someone else's app
+- [`lib/phoenix_analytics/`](lib/phoenix_analytics) — the working parts, in the order a request meets them
+- [`lib/phoenix_analytics/transport/`](lib/phoenix_analytics/transport) — delivery, and carrying the visitor's identity with it
+- [`test/`](test) — organised by claim rather than by module
+- [`AGENT.md`](AGENT.md) — read before changing the session handshake
 
 ## Related
 

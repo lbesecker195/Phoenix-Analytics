@@ -7,7 +7,8 @@ defmodule PhoenixAnalytics.Application do
   def start(_type, _args) do
     children = [
       {Task.Supervisor, name: PhoenixAnalytics.TaskSupervisor},
-      PhoenixAnalytics.Reporter
+      PhoenixAnalytics.Reporter,
+      PhoenixAnalytics.SiteMap
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: PhoenixAnalytics.Supervisor)

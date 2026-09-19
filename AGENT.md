@@ -75,7 +75,7 @@ page.
 
 ## Working on it
 
-    mix test                         # 66 tests
+    mix test                         # 94 tests
     mix format --check-formatted
     mix compile --warnings-as-errors
 
@@ -87,6 +87,25 @@ the mismatch.
 For an end-to-end check against real ingest, generate beacons from the plug and
 feed them to `WebAnalytics.Ingest.submit_sync/3` in a development database. Never
 point a test at the production collect endpoint.
+
+## The MCP server
+
+`lib/phoenix_analytics/mcp/` serves the host application as an MCP server. It is
+here, rather than in a separate package, because a tool call is a visit: every
+call is recorded against the same session as that agent's page reads, which is
+the entire reason the feature earns its place.
+
+Two rules to keep in mind when changing it. A tool is invoked exactly once —
+running it again to discover what it wanted recorded would repeat its side
+effects. And both protocol eras are live; the test for which one a request
+belongs to is the presence of `io.modelcontextprotocol/protocolVersion` in
+`params._meta`, which is required in the new era and unknown in the old, so it
+cannot misfire.
+
+The built-in tools answer only from `PhoenixAnalytics.SiteMap`, which is local
+and ephemeral by design. Do not add a tool that implies durable history; that
+belongs to the analytics account, not to a library installed in someone else's
+application.
 
 ## Conventions
 

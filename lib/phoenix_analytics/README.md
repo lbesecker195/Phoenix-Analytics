@@ -25,6 +25,10 @@ including any server-side events buffered on the connection by
 environment. [`reporter.ex`](reporter.ex) and [`transport/`](transport) deliver
 it without the request ever waiting.
 
+[`mcp/`](mcp) is a separate concern that belongs here for one reason: it serves
+this application as an MCP server, and records every tool call against the same
+visit as the caller's page reads.
+
 Related: the
 [analytics MCP server](https://seriouslysimpleanalytics.com/analytics-mcp-server)
 queries the data this produces, and

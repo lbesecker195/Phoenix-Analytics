@@ -137,6 +137,69 @@ a connection that is then thrown away never happened.
 Keep `:data` coarse — plans, counts, outcomes. It is stored and displayed, so
 never credentials, never prompts, never anything a person typed into a field.
 
+## Your site as an MCP server
+
+Agents are already reading your site. This lets them *use* it — and, unusually,
+measures them doing so.
+
+```elixir
+forward "/mcp", PhoenixAnalytics.MCP.Plug,
+  name: "my-site",
+  title: "My Site",
+  tools: [MyApp.MCP.SearchThings]
+```
+
+With no tools of your own, an agent can already ask what pages the site serves,
+read any of them as clean text, and see how much of the traffic is agents rather
+than people. Those answers are built from what the site has actually served, so
+they need no configuration and cannot go stale the way a hand-written manifest
+does.
+
+Adding your own is a module:
+
+```elixir
+defmodule MyApp.MCP.SearchThings do
+  @behaviour PhoenixAnalytics.MCP.Tool
+
+  @impl true
+  def definition do
+    %{
+      "name" => "search_things",
+      "title" => "Search things",
+      "description" => "Finds things by name.",
+      "inputSchema" => %{
+        "type" => "object",
+        "properties" => %{"query" => %{"type" => "string"}},
+        "required" => ["query"]
+      }
+    }
+  end
+
+  @impl true
+  def call(%{"query" => query}, _ctx), do: {:ok, MyApp.search(query)}
+end
+```
+
+Return plain data; the protocol shape is added for you, including a text
+rendering for clients that only show text.
+
+### Why this belongs in an analytics library
+
+Because a tool call is a visit, and until now it was an unmeasurable one. An
+agent that reads three pages of your documentation and then calls one of your
+tools has done one coherent thing — but the pages land in analytics and the tool
+call lands in a log, if anywhere.
+
+Here they land together. Every call is recorded against the same session as that
+agent's page reads, so you can see what agents came to do and whether they
+managed it, not just which URLs were fetched. Sessions join up two ways: a
+caller carrying your cookies continues the visit it already has, and a caller
+carrying only an MCP session id gets a stable session derived from it — so a
+conversation of twenty calls is one visit, not twenty.
+
+Both protocol eras are spoken: the stateless 2026-07-28 revision and the
+handshake era from 2024-11-05 through 2025-11-25.
+
 ## Configuration
 
 | Option | Default | Notes |

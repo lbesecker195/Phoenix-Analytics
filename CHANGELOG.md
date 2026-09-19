@@ -16,6 +16,14 @@ All notable changes to this project are documented here. This project follows
   API clients — which a browser tag cannot observe at all.
 - Forwarding of the visitor's address and CDN geolocation headers, so a beacon
   posted by the server still resolves to the visitor's location.
+- `PhoenixAnalytics.MCP.Plug`, which serves the host application as an MCP
+  server and records every call against the same analytics session as that
+  agent's page reads. Four built-in tools answerable with no configuration —
+  `list_pages`, `read_page`, `site_activity`, `record_event` — plus a behaviour
+  for an application's own. Speaks the stateless 2026-07-28 revision and the
+  handshake era from 2024-11-05 through 2025-11-25.
+- `PhoenixAnalytics.SiteMap`, a bounded in-memory record of what this node has
+  served, which is what the built-in tools answer from.
 - `PhoenixAnalytics.event/3` for server-side conversions, sent with the request's
   own beacon so they attach to the visit, page and campaign that produced them.
   Events on non-pageview requests are filed against the page the visitor was on

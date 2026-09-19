@@ -66,6 +66,7 @@ defmodule PhoenixAnalytics.Plug do
   alias PhoenixAnalytics.Reporter
   alias PhoenixAnalytics.Request
   alias PhoenixAnalytics.Session
+  alias PhoenixAnalytics.SiteMap
 
   @impl true
   def init(opts), do: Config.build(opts)
@@ -123,6 +124,8 @@ defmodule PhoenixAnalytics.Plug do
       System.convert_time_unit(System.monotonic_time() - started, :native, :millisecond)
 
     request = Request.extract(conn, duration_ms)
+
+    if pageview?, do: SiteMap.record(request.path, request.user_agent)
 
     config.site
     |> Payload.build(session, request, System.os_time(:millisecond),

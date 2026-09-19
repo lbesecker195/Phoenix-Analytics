@@ -75,8 +75,13 @@ defmodule PhoenixAnalytics.Session do
 
     {token, cookie_seq, new?} =
       case parse(cookies[@session_cookie]) do
-        {token, seq} -> {token, seq, false}
-        nil -> {token(), 0, true}
+        # A cookie always wins. An agent that read pages before calling a tool
+        # should have both land on the visit it already has.
+        {token, seq} ->
+          {token, seq, false}
+
+        nil ->
+          {conn.private[:phoenix_analytics_session_token] || token(), 0, true}
       end
 
     {used, last_path} = server_state(cookies[@server_cookie])
@@ -211,6 +216,32 @@ defmodule PhoenixAnalytics.Session do
 
   defp visitor(value) when is_binary(value) and value != "", do: value
   defp visitor(_), do: token()
+
+  @doc """
+  A stable token derived from something a client already identifies itself by.
+
+  For callers that keep no cookies but do carry an identifier of their own — an
+  MCP session id, most usefully — this turns that identifier into the same
+  session token every time, so a conversation made of many requests is one
+  visit rather than many. The identifier is hashed rather than used, so nothing
+  about the client's own naming leaks into storage.
+  """
+  def token_from(seed) when is_binary(seed) and seed != "" do
+    <<a::32, b::16, c::16, d::16, e::48, _::binary>> = :crypto.hash(:sha256, seed)
+
+    Enum.join(
+      [
+        pad(a, 8),
+        pad(b, 4),
+        pad(Bitwise.bor(0x4000, Bitwise.band(c, 0x0FFF)), 4),
+        pad(Bitwise.bor(0x8000, Bitwise.band(d, 0x3FFF)), 4),
+        pad(e, 12)
+      ],
+      "-"
+    )
+  end
+
+  def token_from(_), do: nil
 
   # The tag uses `crypto.randomUUID()`; matching the shape keeps the two
   # indistinguishable in storage, which they should be — they identify the same

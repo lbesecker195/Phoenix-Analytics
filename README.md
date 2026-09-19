@@ -110,6 +110,33 @@ purpose.
 
 Redirects, `404`s, `POST`s, images and binary downloads are never recorded.
 
+## Server-side events
+
+Conversions usually complete on the server — a payment clears, a signup writes a
+row, an API key is issued. Record them where they actually happen:
+
+```elixir
+conn
+|> PhoenixAnalytics.event("signup_completed", data: %{plan: "team"})
+|> redirect(to: ~p"/welcome")
+```
+
+The event is not sent on its own. It rides out with the beacon the plug already
+sends for that request, which is what attaches it to the right visit and the
+right page — a conversion you cannot trace to a page and a campaign is a number
+without a cause.
+
+It works on requests that are not pageviews. A `POST` ending in a redirect
+records no page of its own, but an event on it is filed against the page the
+visitor was on when they submitted, and takes no pageview number the tag was
+going to use.
+
+Because it returns a connection, the caller has to keep it. An event recorded on
+a connection that is then thrown away never happened.
+
+Keep `:data` coarse — plans, counts, outcomes. It is stored and displayed, so
+never credentials, never prompts, never anything a person typed into a field.
+
 ## Configuration
 
 | Option | Default | Notes |

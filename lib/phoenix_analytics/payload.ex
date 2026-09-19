@@ -25,13 +25,16 @@ defmodule PhoenixAnalytics.Payload do
   opened the session it is the only thing that can say what user agent and
   referrer the visit arrived with.
   """
-  def build(site_key, %Session{} = session, request, now_ms) do
+  def build(site_key, %Session{} = session, request, now_ms, opts \\ []) do
+    custom = Keyword.get(opts, :events, [])
+    pageview? = Keyword.get(opts, :pageview?, true)
+
     events =
-      if session.new? do
-        [init_event(request, now_ms), pageview_event(session, request, now_ms)]
-      else
-        [pageview_event(session, request, now_ms)]
-      end
+      List.flatten([
+        if(session.new?, do: [init_event(request, now_ms)], else: []),
+        if(pageview?, do: [pageview_event(session, request, now_ms)], else: []),
+        Enum.map(custom, &custom_event(&1, session, now_ms))
+      ])
 
     %{
       "k" => site_key,
@@ -40,6 +43,22 @@ defmodule PhoenixAnalytics.Payload do
       "t" => now_ms,
       "e" => events
     }
+  end
+
+  # A named thing that happened on the server: a signup completing, a payment
+  # clearing, an API key being issued. The endpoint files these against a
+  # pageview, which is what ties a conversion to the page it happened on.
+  defp custom_event(event, %Session{} = session, now_ms) do
+    %{
+      "n" => "event",
+      "t" => now_ms,
+      "name" => event.name,
+      "pv" => session.seq,
+      "data" => event.data,
+      "text" => event.text,
+      "trig" => event.trigger
+    }
+    |> prune()
   end
 
   defp init_event(request, now_ms) do

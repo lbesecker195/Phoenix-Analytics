@@ -18,7 +18,9 @@ browser tag writes and works out which pageview number the tag is about to use,
 so both halves describe one visit instead of two. The reasoning is written out
 in full there.
 
-[`payload.ex`](payload.ex) assembles the beacon in the tag's own wire format.
+[`payload.ex`](payload.ex) assembles the beacon in the tag's own wire format,
+including any server-side events buffered on the connection by
+`PhoenixAnalytics.event/3`.
 [`config.ex`](config.ex) resolves settings, including values deferred to the
 environment. [`reporter.ex`](reporter.ex) and [`transport/`](transport) deliver
 it without the request ever waiting.

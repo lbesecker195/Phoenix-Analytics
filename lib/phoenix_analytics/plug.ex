@@ -93,10 +93,22 @@ defmodule PhoenixAnalytics.Plug do
   # malformed header, must cost the visit's measurement and nothing else: the
   # page still renders.
   defp before_send(conn, config, started) do
-    if Request.trackable?(conn, config.ignore_paths) do
-      record(conn, config, started)
-    else
-      conn
+    pageview? = Request.trackable?(conn, config.ignore_paths)
+    events = PhoenixAnalytics.buffered(conn)
+
+    cond do
+      pageview? ->
+        record(conn, config, started, events, true)
+
+      # No pageview, but something happened worth recording. The event belongs
+      # to the page the visitor was already on, so the sequence does not
+      # advance — taking a number here would leave a gap the tag then fills
+      # with an unrelated page.
+      events != [] ->
+        record(conn, config, started, events, false)
+
+      true ->
+        conn
     end
   rescue
     error ->
@@ -104,8 +116,8 @@ defmodule PhoenixAnalytics.Plug do
       conn
   end
 
-  defp record(conn, config, started) do
-    session = Session.resolve(conn)
+  defp record(conn, config, started, events, pageview?) do
+    session = conn |> Session.resolve() |> claim(pageview?)
 
     duration_ms =
       System.convert_time_unit(System.monotonic_time() - started, :native, :millisecond)
@@ -113,9 +125,17 @@ defmodule PhoenixAnalytics.Plug do
     request = Request.extract(conn, duration_ms)
 
     config.site
-    |> Payload.build(session, request, System.os_time(:millisecond))
+    |> Payload.build(session, request, System.os_time(:millisecond),
+      events: events,
+      pageview?: pageview?
+    )
     |> Reporter.report(request, config)
 
     Session.put_cookies(conn, session, config)
   end
+
+  # `Session.resolve/1` hands back the number this request *would* take. It only
+  # actually takes it when a page was served.
+  defp claim(session, true), do: session
+  defp claim(session, false), do: %{session | seq: max(session.seq - 1, 0)}
 end

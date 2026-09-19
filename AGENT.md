@@ -64,12 +64,18 @@ you are adding a field, read that module rather than guessing a key name. Fields
 it does not recognise are silently dropped, which fails quietly and looks like
 nothing happened.
 
-Only `init` and `pv` can be filled in from a server. Ticks, clicks and form
-activity need a browser and belong to the tag.
+Only `init`, `pv` and custom `event` entries can be filled in from a server.
+Ticks, clicks and form activity need a browser and belong to the tag.
+
+Custom events buffer on the connection and leave with that request's beacon, so
+they land on the right visit and page. The rule that keeps this safe is in
+`plug.ex`: a request that served no page does not advance the sequence, because
+taking a number there would leave a gap the tag then fills with an unrelated
+page.
 
 ## Working on it
 
-    mix test                         # 61 tests
+    mix test                         # 66 tests
     mix format --check-formatted
     mix compile --warnings-as-errors
 
